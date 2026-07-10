@@ -1,3 +1,5 @@
+package com.example;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,26 +51,22 @@ class Shipment {
     public double       getWeightKg()       { return weightKg;       }
     public ShipmentType getType()           { return type;           }
 
-    // 👉 TODO A : if-else ใน calculateCost() สลับกัน
-    //             ตอนนี้ STANDARD ใช้ EXPRESS_RATE และ EXPRESS ใช้ STANDARD_RATE
-    //             แก้ให้ถูกต้อง (แก้แค่ if condition อย่างเดียว)
+    // 👉 TODO A : แก้ไข if condition สลับกันเรียบร้อยแล้ว
     public double calculateCost() {
         final double STANDARD_RATE =  40.0;
         final double EXPRESS_RATE  = 100.0;
-        if (type == ShipmentType.EXPRESS) {          // ← ผิด ควรเช็ค STANDARD
+        if (type == ShipmentType.STANDARD) {          // ← แก้จาก EXPRESS เป็น STANDARD
             return weightKg * STANDARD_RATE;
         } else {
             return weightKg * EXPRESS_RATE;
         }
     }
 
-    // 👉 TODO B : toString() ยังไม่สมบูรณ์
-    //             ให้แสดงในรูปแบบนี้ (ดูตัวอย่างใน ExpectedOutput_Section3.md):
-    //             [RS001]  2.00 กก. | STANDARD |     80.00 บาท
-    //             แนะนำ: ใช้ String.format() และเรียก calculateCost()
+    // 👉 TODO B : เติม String.format() แสดงผลลัพธ์ให้ตรงตามรูปแบบรีพอร์ต
     @Override
     public String toString() {
-        return "[" + trackingNumber + "] ???";  // ← เติมให้ครบ
+        return String.format("[%s] %6.2f กก. | %-8s | %9.2f บาท", 
+                trackingNumber, weightKg, type, calculateCost());
     }
 }
 
@@ -90,31 +88,30 @@ class ShippingCompany {
         shipments.add(s);
     }
 
-    // 👉 TODO C : getTotalCost() วนลูปผิด — ใช้ index ผิด
-    //             ตอนนี้ดึงแค่ shipments.get(0) ทุกรอบ
-    //             แก้ให้ดึง shipments.get(i) ให้ถูกต้อง
+    // 👉 TODO C : แก้ไขให้วนลูปดึงข้อมูลด้วยดัชนี get(i) แทนตัวแรก get(0)
     public double getTotalCost() {
         double total = 0;
         for (int i = 0; i < shipments.size(); i++) {
-            total += shipments.get(0).calculateCost();  // ← ผิด ควรเป็น get(i)
+            total += shipments.get(i).calculateCost();  // ← แก้จาก get(0) เป็น get(i)
         }
         return total;
     }
 
-    // 👉 TODO D : printSummary() ยังขาด 2 ส่วน
-    //             1) loop แสดงรายการแต่ละ shipment
-    //             2) บรรทัดแสดงยอดรวม
-    //             เติมทั้งสองส่วนนั้น
+    // 👉 TODO D : เติมลูปแสดงรายการพัสดุ และบรรทัดแสดงยอดรวมทั้งหมด
     public void printSummary() {
         System.out.println("========================================");
         System.out.printf ("  บริษัท        : %s%n",   name);
         System.out.printf ("  จำนวน Shipment : %d รายการ%n", shipments.size());
         System.out.println("========================================");
 
-        // 1) วนลูปแสดงแต่ละ shipment ตรงนี้
+        // 1) วนลูปแสดงแต่ละ shipment 
+        for (Shipment s : shipments) {
+            System.out.println(s.toString());
+        }
 
         System.out.println("----------------------------------------");
-        // 2) แสดงยอดรวมตรงนี้
+        // 2) แสดงยอดรวม
+        System.out.printf ("  ยอดรวมค่าขนส่ง : %9.2f บาท%n", getTotalCost());
     }
 }
 
